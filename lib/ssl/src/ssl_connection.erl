@@ -2398,9 +2398,18 @@ handle_resumed_session(SessId, #state{connection_states = ConnectionStates0,
 				      negotiated_version = Version,
 				      host = Host, port = Port,
 				      protocol_cb = Connection,
+				      session = Session0,
 				      session_cache = Cache,
 				      session_cache_cb = CacheCb} = State0) ->
-    Session = CacheCb:lookup(Cache, {{Host, Port}, SessId}),
+    Session = case CacheCb:lookup(Cache, {{Host, Port}, SessId}) of
+        undefined ->	% is_binary(#ssl_config.reuse_sessions)
+            hd(CacheCb:foldl(fun
+              ({{_PeerName,I}, X}, []) when I == SessId -> [X];
+              (_, A) -> A
+            end, [], Cache));
+        X ->
+            X
+    end,
     case ssl_handshake:master_secret(ssl:tls_version(Version), Session,
 				     ConnectionStates0, client) of
 	{_, ConnectionStates} ->

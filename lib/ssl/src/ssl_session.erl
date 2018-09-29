@@ -93,6 +93,12 @@ server_id(Port, SuggestedId, Options, Cert, Cache, CacheCb) ->
 %%--------------------------------------------------------------------
 select_session({_, _, #ssl_options{reuse_sessions=false}}, _Cache, _CacheCb, _OwnCert) ->
     no_session;
+select_session({_, _, SslOpts = #ssl_options{reuse_sessions=SessId}}, Cache, CacheCb, OwnCert) when is_binary(SessId) ->
+    Sessions = CacheCb:foldl(fun
+        ({{_PeerName,I}, X}, []) when I == SessId -> [X];
+        (_, A) -> A
+    end, [], Cache),
+    select_session(Sessions, SslOpts, OwnCert);
 select_session({HostIP, Port, SslOpts}, Cache, CacheCb, OwnCert) ->
     Sessions = CacheCb:select_session(Cache, {HostIP, Port}),
     select_session(Sessions, SslOpts, OwnCert).

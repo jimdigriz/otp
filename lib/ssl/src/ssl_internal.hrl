@@ -113,7 +113,7 @@
 	  reuse_session,  
 	  %% If false sessions will never be reused, if true they
 	  %% will be reused if possible.
-	  reuse_sessions       :: boolean(),
+	  reuse_sessions       :: boolean() | binary(),
 	  renegotiate_at,
 	  secure_renegotiate,
 	  client_renegotiation,

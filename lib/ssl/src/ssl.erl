@@ -1121,7 +1121,7 @@ validate_option(srp_identity, {Username, Password})
 
 validate_option(reuse_session, Value) when is_function(Value) ->
     Value;
-validate_option(reuse_sessions, Value) when is_boolean(Value) ->
+validate_option(reuse_sessions, Value) when is_boolean(Value); is_binary(Value) ->
     Value;
 
 validate_option(secure_renegotiate, Value) when is_boolean(Value) ->
