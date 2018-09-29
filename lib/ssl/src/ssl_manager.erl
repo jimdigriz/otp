@@ -547,15 +547,10 @@ ssl_client_register_session(Host, Port, Session, #state{session_cache_client = C
     TimeStamp = erlang:monotonic_time(),
     NewSession = Session#session{time_stamp = TimeStamp},
     
-    case CacheCb:select_session(Cache, {Host, Port}) of
-	no_session ->
-	    Pid = do_register_session({{Host, Port}, 
+    Pid = do_register_session({{Host, Port},
 				     NewSession#session.session_id}, 
 				      NewSession, Max, Pid0, Cache, CacheCb),
-	    State#state{session_client_invalidator = Pid};
-	Sessions ->
-	    register_unique_session(Sessions, NewSession, {Host, Port}, State)
-    end.
+    State#state{session_client_invalidator = Pid}.
 
 server_register_session(Port, Session, #state{session_cache_server_max = Max,
 					      session_cache_server = Cache,
@@ -578,24 +573,6 @@ do_register_session(Key, Session, Max, Pid, Cache, CacheCb) ->
 	error:undef ->
 	    CacheCb:update(Cache, Key, Session),
             Pid		
-    end.
-
-
-%% Do not let dumb clients create a gigantic session table
-%% for itself creating big delays at connection time. 
-register_unique_session(Sessions, Session, PartialKey, 
-			#state{session_cache_client_max = Max,
-			       session_cache_client = Cache,
-			       session_cache_cb = CacheCb,
-			       session_client_invalidator = Pid0} = State) ->
-    case exists_equivalent(Session , Sessions) of
-	true ->
-	    State;
-	false ->
-	    Pid = do_register_session({PartialKey, 
-				       Session#session.session_id}, 
-				      Session, Max, Pid0, Cache, CacheCb),
-	    State#state{session_client_invalidator = Pid}
     end.
 
 exists_equivalent(_, []) ->
