@@ -1599,7 +1599,7 @@ handle_ctrl_result({tls_upgrade, _}, #state{csock = {tcp, Socket},
 	    activate_ctrl_connection(State),
 	    {noreply, State#state{tls_upgrading_data_connection = {true, pbsz}} };
 	{error, _} = Error ->
-	    gen_server:reply(From,  {Error, self()}),
+	    gen_server:reply(From, Error),
 	    {stop, normal, State0#state{client = undefined, 
 					caller = undefined,
 					tls_upgrading_data_connection = false}}
@@ -1756,8 +1756,9 @@ handle_ctrl_result({pos_prel, _}, #state{caller = {dir, Dir}} = State0) ->
 		undefined ->
 		    {stop, ERROR, State0};
 		From ->
+	            activate_ctrl_connection(State0),
 		    gen_server:reply(From, ERROR),
-		    {stop, normal, State0#state{client = undefined}}
+	            {noreply, State0#state{caller = undefined}}
 	    end
     end;
 
@@ -1865,8 +1866,9 @@ handle_ctrl_result({pos_prel, _}, #state{caller = recv_bin} = State0) ->
 		undefined ->
 		    {stop, ERROR, State0};
 		From ->
+	            activate_ctrl_connection(State0),
 		    gen_server:reply(From, ERROR),
-		    {stop, normal, State0#state{client = undefined}}
+		    {noreply, State0#state{caller = undefined}}
 	    end
     end;
 
@@ -1899,8 +1901,9 @@ handle_ctrl_result({pos_prel, _}, #state{client = From,
 		undefined ->
 		    {stop, ERROR, State0};
 		From ->
+	            activate_ctrl_connection(State0),
 		    gen_server:reply(From, ERROR),
-		    {stop, normal, State0#state{client = undefined}}
+		    {noreply, State0#state{caller = undefined}}
 	    end
     end;
 
@@ -1940,8 +1943,9 @@ handle_ctrl_result({pos_prel, _}, #state{caller = {recv_file, _}} = State0) ->
 		undefined ->
 		    {stop, ERROR, State0};
 		From ->
+	            activate_ctrl_connection(State0),
 		    gen_server:reply(From, ERROR),
-		    {stop, normal, State0#state{client = undefined}}
+		    {noreply, State0#state{client = undefined}}
 	    end
     end;
 
@@ -1962,8 +1966,9 @@ handle_ctrl_result({pos_prel, _}, #state{caller = {transfer_file, Fd}}
 		undefined ->
 		    {stop, ERROR, State0};
 		From ->
+	            activate_ctrl_connection(State0),
 		    gen_server:reply(From, ERROR),
-		    {stop, normal, State0#state{client = undefined}}
+		    {noreply, State0#state{client = undefined}}
 	    end
     end;
 
@@ -1977,8 +1982,9 @@ handle_ctrl_result({pos_prel, _}, #state{caller = {transfer_data, Bin}}
 		undefined ->
 		    {stop, ERROR, State0};
 		From ->
+	            activate_ctrl_connection(State0),
 		    gen_server:reply(From, ERROR),
-		    {stop, normal, State0#state{client = undefined}}
+		    {noreply, State0#state{client = undefined}}
 	    end
     end;
 
