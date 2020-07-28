@@ -48,7 +48,7 @@
         {nodelay,         boolean()} |
         {packet,
          0 | 1 | 2 | 4 | raw | sunrm |  asn1 |
-         cdr | fcgi | line | tpkt | http | httph | http_bin | httph_bin } |
+         cdr | fcgi | line | tpkt | http | httph | http_bin | httph_bin | radius } |
         {packet_size,     non_neg_integer()} |
         {priority,        non_neg_integer()} |
         {raw,

@@ -239,6 +239,14 @@ struct tpkt_head {
     unsigned char packet_length[2]; /* size incl header, big-endian (?) */
 };
 
+#define RADIUS_SIZE_MIN 20
+
+struct radius_head {
+    unsigned char code;
+    unsigned char id;
+    unsigned char packet_length[2]; /* size incl header, big-endian */
+};
+
 void packet_parser_init()
 {
     static int done = 0;
@@ -468,6 +476,18 @@ int packet_get_length(enum PacketParseType htype,
         goto remain;
     }
     
+    case TCP_PB_RADIUS: {
+        const struct radius_head* hp;
+        hlen = sizeof(struct radius_head);
+        if (n < hlen)
+            goto more;
+        hp = (struct radius_head*) ptr;
+        plen = get_int16(hp->packet_length) - hlen;
+        if (plen < RADIUS_SIZE_MIN)
+            goto error;
+        goto remain;
+    }
+
     case TCP_PB_SSL_TLS:
         hlen = 5;
         if (n < hlen) goto more;        

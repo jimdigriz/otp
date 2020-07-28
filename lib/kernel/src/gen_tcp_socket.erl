@@ -973,7 +973,7 @@ module_socket(#params{socket = Socket}) ->
 
 %% -type packet_option_value() ::
 %%         0 | 1 | 2 | 4 | raw | sunrm |  asn1 |
-%%         cdr | fcgi | line | tpkt | http | httph | http_bin | httph_bin.
+%%         cdr | fcgi | line | tpkt | http | httph | http_bin | httph_bin | radius.
 
 -compile({inline, [is_packet_option_value/1]}).
 is_packet_option_value(Value) ->
@@ -990,6 +990,7 @@ is_packet_option_value(Value) ->
         httph -> true;
         http_bin -> true;
         httph_bin -> true;
+        radius -> true;
         _ -> false
     end.
 

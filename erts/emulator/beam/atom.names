@@ -544,6 +544,7 @@ atom public
 atom purify
 atom quantify
 atom queue_size
+atom radius
 atom raw
 atom re
 atom re_pattern
