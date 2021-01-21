@@ -203,6 +203,8 @@ decode_rr_section(Bin, N, Buffer, RRs) ->
 	    RR =
 		case Type of
 		    opt ->
+			% RFC 6891: 6.1.1. Return FORMERR if more than one EDNS(0) option
+			lists:keymember(dns_rr_opt, 1, RRs) andalso throw(?DECODE_ERROR),
 			<<ExtRcode,Version,Z:16>> = TTL,
 			#dns_rr_opt{domain=Name,
 				    type=Type,
